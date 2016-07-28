@@ -16,6 +16,54 @@
 {{ end }}
 
 
+<!-- Blog Posts Section -->
+{{ $posts_len := len (where (where .Data.Pages "Type" "post") ".Params.notonhomepage" nil) }}
+{{ if gt $posts_len 0 }}
+<section id="posts" class="home-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-4 section-heading">
+                <h1>{{ with .Site.Params.posts.title }}{{ . | markdownify }}{{ end }}</h1>
+                {{ with .Site.Params.posts.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
+                {{ if gt $posts_len .Site.Params.posts.count }}
+                <p class="view-all">
+                    <a href="{{ .Site.BaseURL }}post/">
+                        {{ with .Site.Params.posts.str_all }}{{ . | markdownify }}{{ end }}
+                        <i class="fa fa-angle-double-right"></i>
+                    </a>
+                </p>
+                {{ end }}
+            </div>
+            <div class="col-xs-12 col-md-8">
+                {{ range first .Site.Params.posts.count (where (where .Data.Pages "Type" "post") ".Params.notonhomepage" nil) }}
+                <div class="article-list-item" itemscope itemprop="blogPost">
+                    {{ if .Params.image }}
+                    <a href="{{ .Permalink }}">
+                        <img src="{{ $.Site.BaseURL }}img/{{ .Params.image }}" class="article-banner" itemprop="image">
+                    </a>
+                    {{end}}
+                    <h3 class="article-title" itemprop="name"><a href="{{ .Permalink }}" itemprop="url">{{ .Title }}</a></h3>
+                    {{ partial "article_metadata" (dict "content" . "is_list" 1) }}
+                    <p class="article-style" itemprop="articleBody">
+                        {{ if .Truncated }}
+                            {{ .Summary }}
+                        {{ else }}
+                            {{ .Content }}
+                        {{ end }}
+                    </p>
+                    <p class="read-more">
+                        <a href="{{ .Permalink }}" class="btn btn-primary btn-outline">
+                            {{ with .Site.Params.posts.str_read_more }}{{ . | markdownify }}{{ end }}
+                        </a>
+                    </p>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}
+
 <!-- Selected Publications Section -->
 {{ $pubs_selected_len := len (where (where .Data.Pages "Type" "publication") ".Params.selected" true) }}
 {{ if gt $pubs_selected_len 0 }}
@@ -82,48 +130,30 @@
 {{ end }}
 
 
-<!-- Blog Posts Section -->
-{{ $posts_len := len (where (where .Data.Pages "Type" "post") ".Params.notonhomepage" nil) }}
-{{ if gt $posts_len 0 }}
-<section id="posts" class="home-section">
+<!-- Talks Section -->
+{{ $talks_len := len (where .Data.Pages "Type" "talk") }}
+{{ if gt $talks_len 0 }}
+<section id="talks" class="home-section">
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-md-4 section-heading">
-                <h1>{{ with .Site.Params.posts.title }}{{ . | markdownify }}{{ end }}</h1>
-                {{ with .Site.Params.posts.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
-                {{ if gt $posts_len .Site.Params.posts.count }}
+                <h1>{{ with .Site.Params.talks.title }}{{ . | markdownify }}{{ end }}</h1>
+                {{ with .Site.Params.talks.subtitle }}<p>{{ . | markdownify }}</p>{{ end }}
+                {{ if gt $talks_len .Site.Params.talks.count }}
                 <p class="view-all">
-                    <a href="{{ .Site.BaseURL }}post/">
-                        {{ with .Site.Params.posts.str_all }}{{ . | markdownify }}{{ end }}
+                    <a href="{{ .Site.BaseURL }}talk/">
+                        {{ with .Site.Params.talk.str_all }}{{ . | markdownify }}{{ end }}
                         <i class="fa fa-angle-double-right"></i>
                     </a>
                 </p>
                 {{ end }}
             </div>
             <div class="col-xs-12 col-md-8">
-                {{ range first .Site.Params.posts.count (where (where .Data.Pages "Type" "post") ".Params.notonhomepage" nil) }}
-                <div class="article-list-item" itemscope itemprop="blogPost">
-                    {{ if .Params.image }}
-                    <a href="{{ .Permalink }}">
-                        <img src="{{ $.Site.BaseURL }}img/{{ .Params.image }}" class="article-banner" itemprop="image">
-                    </a>
-                    {{end}}
-                    <h3 class="article-title" itemprop="name"><a href="{{ .Permalink }}" itemprop="url">{{ .Title }}</a></h3>
-                    {{ partial "article_metadata" (dict "content" . "is_list" 1) }}
-                    <p class="article-style" itemprop="articleBody">
-                        {{ if .Truncated }}
-                            {{ .Summary }}
-                        {{ else }}
-                            {{ .Content }}
-                        {{ end }}
-                    </p>
-                    <p class="read-more">
-                        <a href="{{ .Permalink }}" class="btn btn-primary btn-outline">
-                            {{ with .Site.Params.posts.str_read_more }}{{ . | markdownify }}{{ end }}
-                        </a>
-                    </p>
-                </div>
-                {{ end }}
+                <ul class="fa-ul">
+                    {{ range first .Site.Params.talks.count (where .Data.Pages "Type" "talk") }}
+                    {{ partial "talk_li_simple" . }}
+                    {{ end }}
+                </ul>
             </div>
         </div>
     </div>
@@ -147,7 +177,7 @@
                     <li>
                         <span class="project-title">
                         {{ if .Content }}<a href="{{ .Permalink }}">{{ else }}{{ with .Params.external_link }}<a href="{{ . }}">{{ end }}{{ end }}
-                        <i class="fa-li fa fa-files-o pub-icon" aria-hidden="true"></i>
+                        <i class="fa-li fa fa-code pub-icon" aria-hidden="true"></i>
                         {{ .Title }}
                         {{ if .Content }}</a >{{ else }}{{ with .Params.external_link }}</a>{{ end }}{{ end }}
                         </span>
@@ -194,6 +224,7 @@
 </section>
 {{ end }}
 {{ end }}
+
 
 
 <!-- Contact Section -->
